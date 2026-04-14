@@ -45,15 +45,6 @@ export default {
     return response.json();
   },
 
-  async getGoals() {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/finance/goals`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (!response.ok) return []; // Если целей пока нет, возвращаем пустой массив
-    return response.json();
-  },
-  
   async addTransaction(payload) {
     const token = localStorage.getItem('token');
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/finance/transactions`, {
@@ -74,6 +65,34 @@ export default {
       console.error("Ошибка бэкенда:", errorDetail);
       throw new Error('Ошибка при сохранении транзакции');
     }
+    return response.json();
+  },
+
+  async getGoals() {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/finance/goals`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) return []; // Если целей пока нет, возвращаем пустой массив
+    return response.json();
+  },
+
+  async addGoal(payload) {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/finance/goals`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        Title: payload.title,
+        Target: Number(payload.target),
+        Current: 0 // Новая цель всегда начинается с нуля
+      })
+    });
+
+    if (!response.ok) throw new Error('Ошибка при создании цели');
     return response.json();
   }
 }
