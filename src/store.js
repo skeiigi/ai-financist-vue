@@ -49,6 +49,27 @@ export const store = reactive({
     }
   },
 
+  // Внутри store.js
+  async addGoal(payload) {
+    if (!this.isLoggedIn) {
+      // Демо-режим: просто пушим в массив
+      this.goals.push({
+        id: Date.now(),
+        ...payload,
+        current: 0
+      });
+      return;
+    }
+
+    try {
+      const newGoal = await api.addGoal(payload);
+      this.goals.push(newGoal);
+      console.log('Цель успешно сохранена в БД');
+    } catch (err) {
+      alert("Не удалось сохранить цель на сервере");
+    }
+  },
+
   // Очистка при выходе
   logout() {
     localStorage.removeItem('token');
