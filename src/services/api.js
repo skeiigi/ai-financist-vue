@@ -1,6 +1,28 @@
 const API_BASE = import.meta.env.VITE_API_URL; // Замени на свою!
 
 export default {
+  async register(email, password) {
+    const response = await fetch(`${API_BASE}/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (!response.ok) {
+      // Identity выдает ошибки в сложном формате, вытащим первую понятную
+      const errorData = await response.json().catch(() => ({}));
+      const message = errorData.errors 
+        ? Object.values(errorData.errors)[0][0] 
+        : 'Ошибка регистрации. Возможно, пароль слишком простой.';
+      throw new Error(message);
+    }
+
+    // После успешной регистрации сразу логиним пользователя, чтобы получить токен
+    return this.login(email, password);
+  },
+  
   async login(email, password) {
     const response = await fetch(`${API_BASE}/login`, {
       method: 'POST',
@@ -23,20 +45,23 @@ export default {
     return response.json();
   },
 
+  // src/services/api.js
   async addTransaction(payload) {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/api/finance/transactions`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/finance/transactions`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
-        amount: Number(payload.amount),
-        merchant: payload.merchant,
-        category: payload.category
+        Amount: Number(payload.amount), // .NET модель ждет Amount
+        Category: payload.category,    // Category
+        Merchant: payload.merchant,    // Merchant
+        // Id, UserId и Date бэкенд проставит сам
       })
     });
+    if (!response.ok) throw new Error('Ошибка при сохранении транзакции');
     return response.json();
   }
 }
