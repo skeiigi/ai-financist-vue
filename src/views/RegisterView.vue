@@ -13,6 +13,11 @@
       </div>
 
       <div class="form-group">
+        <label>Имя</label>
+        <input v-model="name" type="text" class="input-field" placeholder="Как вас зовут?" :disabled="loading">
+      </div>
+
+      <div class="form-group">
         <label>Пароль</label>
         <input v-model="form.password" type="password" class="input-field" placeholder="••••••••" :disabled="loading">
       </div>
@@ -48,6 +53,7 @@ const form = ref({
 })
 const loading = ref(false)
 const error = ref('')
+const name = ref('')
 
 const handleRegister = async () => {
   if (!form.value.email || !form.value.password || !form.value.confirmPassword) {
@@ -64,7 +70,7 @@ const handleRegister = async () => {
   error.value = ''
 
   try {
-    const response = await api.register(form.value.email, form.value.password)
+    const response = await api.register(form.value.email, form.value.password, name.value)
     
     // После успешной регистрации - автоматический вход
     await api.login(form.value.email, form.value.password)
