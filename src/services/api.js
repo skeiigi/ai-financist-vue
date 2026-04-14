@@ -19,7 +19,7 @@ export default {
       throw new Error(message);
     }
 
-    // После успешной регистрации сразу логиним пользователя, чтобы получить токен
+    localStorage.setItem('userName', firstName);
     return this.login(email, password);
   },
   

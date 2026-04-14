@@ -13,8 +13,8 @@
       </div>
 
       <div class="form-group">
-        <label>Имя</label>
-        <input v-model="name" type="text" class="input-field" placeholder="Как вас зовут?" :disabled="loading">
+        <label>Как вас зовут?</label>
+        <input v-model="firstName" type="text" class="input-field" placeholder="Введите имя">
       </div>
 
       <div class="form-group">
