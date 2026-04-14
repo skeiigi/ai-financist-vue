@@ -8,18 +8,22 @@ export const store = reactive({
     { id: 2, amount: 200, merchant: 'Демо: Такси', category: 'Транспорт', date: '2026-04-12' }
   ],
   goals: [],
-
-  // Загрузка данных с бэкенда
+  
   async fetchData() {
-    if (!this.isLoggedIn) return; // Если не вошли, остаемся с демо-данными
+    if (!this.isLoggedIn) return;
     
     try {
-      const tx = await api.getTransactions();
-      const gl = await api.getGoals();
-      this.transactions = tx;
+      const [tx, gl] = await Promise.all([
+        api.getTransactions(),
+        api.getGoals()
+      ]);
+      
+      // ВАЖНО: полностью заменяем массивы данными из БД
+      this.transactions = tx; 
       this.goals = gl;
+      console.log('Данные успешно синхронизированы с БД');
     } catch (err) {
-      console.error("Ошибка загрузки данных:", err);
+      console.error("Ошибка синхронизации:", err);
     }
   },
 
