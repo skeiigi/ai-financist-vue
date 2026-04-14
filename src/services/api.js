@@ -47,7 +47,7 @@ export default {
 
   async addTransaction(payload) {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/finance/transactions`, {
+    const response = await fetch(`${API_BASE}/api/finance/transactions`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ export default {
 
   async getGoals() {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/finance/goals`, {
+    const response = await fetch(`${API_BASE}/api/finance/goals`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!response.ok) return []; // Если целей пока нет, возвращаем пустой массив
@@ -79,7 +79,7 @@ export default {
 
   async addGoal(payload) {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/finance/goals`, {
+    const response = await fetch(`${API_BASE}/api/finance/goals`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ export default {
       },
       body: JSON.stringify({
         Title: payload.title,
-        Target: Number(payload.target),
+        Target: payload.target,
         Current: 0 // Новая цель всегда начинается с нуля
       })
     });
