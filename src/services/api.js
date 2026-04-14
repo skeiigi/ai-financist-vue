@@ -7,7 +7,7 @@ export default {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ Email, Password, PhoneNumber: phone })
+      body: JSON.stringify({ email, password, phoneNumber: phone })
     });
 
     if (!response.ok) {
