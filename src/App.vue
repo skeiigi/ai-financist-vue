@@ -1,3 +1,12 @@
+<script setup>
+import { onMounted } from 'vue'
+import { store } from './store'
+
+onMounted(() => {
+  store.fetchData();
+})
+</script>
+
 <template>
   <div class="app-wrapper">
     <RouterView />

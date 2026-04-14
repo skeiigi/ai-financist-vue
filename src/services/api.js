@@ -1,121 +1,42 @@
-// API сервис для взаимодействия с бэкендом
-const API_BASE_URL = 'http://localhost:5226';
+const API_BASE = import.meta.env.VITE_API_URL; // Замени на свою!
 
-class ApiService {
-  constructor() {
-    this.baseURL = API_BASE_URL;
-    this.token = localStorage.getItem('authToken');
-  }
-
-  // Получить заголовки для запроса
-  getHeaders() {
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    if (this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
-    }
-    return headers;
-  }
-
-  // Универсальный метод для запросов
-  async request(endpoint, options = {}) {
-    const url = `${this.baseURL}${endpoint}`;
-    const config = {
-      headers: this.getHeaders(),
-      ...options,
-    };
-
-    try {
-      const response = await fetch(url, config);
-      
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('API Request Error:', error);
-      throw error;
-    }
-  }
-
-  // === AUTHENTICATION ===
-  async register(email, password) {
-    return this.request('/register', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
-  }
-
+export default {
   async login(email, password) {
-    const response = await this.request('/login', {
+    const response = await fetch(`${API_BASE}/login`, {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
     });
-    
-    if (response.accessToken) {
-      this.token = response.accessToken;
-      localStorage.setItem('authToken', response.accessToken);
-    }
-    
-    return response;
-  }
 
-  async logout() {
-    this.token = null;
-    localStorage.removeItem('authToken');
-  }
+    if (!response.ok) throw new Error('Неверный логин или пароль');
+    
+    const data = await response.json();
+    localStorage.setItem('token', data.accessToken);
+    return data;
+  },
 
-  // === TRANSACTIONS ===
   async getTransactions() {
-    return this.request('/api/finance/transactions', {
-      method: 'GET',
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/api/finance/transactions`, {
+      headers: { 'Authorization': `Bearer ${token}` }
     });
-  }
+    return response.json();
+  },
 
-  async addTransaction(transaction) {
-    return this.request('/api/finance/transactions', {
+  async addTransaction(payload) {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/api/finance/transactions`, {
       method: 'POST',
-      body: JSON.stringify(transaction),
-    });
-  }
-
-  // === GOALS ===
-  async getGoals() {
-    return this.request('/api/finance/goals', {
-      method: 'GET',
-    });
-  }
-
-  async addGoal(goal) {
-    return this.request('/api/finance/goals', {
-      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({
-        title: goal.title,
-        targetAmount: goal.targetAmount || goal.target,
-        currentAmount: goal.currentAmount || goal.current || 0
-      }),
+        amount: Number(payload.amount),
+        merchant: payload.merchant,
+        category: payload.category
+      })
     });
-  }
-
-  async updateGoal(id, goal) {
-    return this.request(`/api/finance/goals/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        title: goal.title,
-        targetAmount: goal.targetAmount || goal.target,
-        currentAmount: goal.currentAmount || goal.current
-      }),
-    });
-  }
-
-  async deleteGoal(id) {
-    return this.request(`/api/finance/goals/${id}`, {
-      method: 'DELETE',
-    });
+    return response.json();
   }
 }
-
-export default new ApiService();
