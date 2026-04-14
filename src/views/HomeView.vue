@@ -2,7 +2,7 @@
   <div class="container">
     <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
       <div>
-        <h1 style="margin: 0; font-size: 16px; color: #6b7280; font-weight: normal;">Привет, {{ localStorage.getItem('userName') || 'Друг' }}!</h1>
+        <h1 style="margin: 0; font-size: 16px; color: #6b7280; font-weight: normal;">Привет, {{ userName }}!</h1>
         <p style="margin: 0; font-size: 20px; font-weight: bold;">Рад тебя видеть 👋</p>
       </div>
       <button @click="handleSettingsClick" class="settings-btn">
@@ -50,8 +50,18 @@
 <script setup>
 import { store } from '../store'
 import { useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
 
 const router = useRouter()
+
+const userName = ref('Друг')
+
+onMounted(() => {
+  const savedName = localStorage.getItem('userName')
+  if (savedName) {
+    userName.value = savedName
+  }
+})
 
 const handleSettingsClick = () => {
   if (store.isLoggedIn) {
