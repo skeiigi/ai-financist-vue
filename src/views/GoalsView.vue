@@ -34,13 +34,12 @@
       
       <div style="height: 45px; background: #f3f4f6; border: 2px solid #e5e7eb; border-radius: 12px; overflow: hidden; position: relative;">
         <div :style="{ 
-          width: Math.min(((goal.current || goal.Current || 0) / (goal.target || goal.Target) * 100), 100) + '%', 
+          width: Math.min(((goal.CurrentAmount || 0) / (goal.TargetAmount || 1) * 100), 100) + '%', 
           background: '#2563eb', 
-          height: '100%',
-          transition: 'width 0.5s ease'
+          height: '100%' 
         }"></div>
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 500; color: #1f2937;">
-          {{ Math.round((goal.current || goal.Current || 0) / (goal.target || goal.Target) * 100) }}% накоплено
+          {{ Math.round((goal.CurrentAmount || 0) / (goal.TargetAmount || 1) * 100) }}% накоплено
         </div>
       </div>
     </div>

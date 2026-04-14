@@ -87,7 +87,7 @@ export default {
       },
       body: JSON.stringify({
         Title: payload.title,
-        Target: payload.target,
+        TargetAmount: Number(payload.target),
         Current: 0 // Новая цель всегда начинается с нуля
       })
     });
