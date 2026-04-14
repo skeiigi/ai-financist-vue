@@ -44,8 +44,7 @@ export default {
     });
     return response.json();
   },
-
-  // src/services/api.js
+  
   async addTransaction(payload) {
     const token = localStorage.getItem('token');
     const response = await fetch(`${import.meta.env.VITE_API_URL}/api/finance/transactions`, {
@@ -55,13 +54,17 @@ export default {
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
-        Amount: Number(payload.amount), // .NET модель ждет Amount
-        Category: payload.category,    // Category
-        Merchant: payload.merchant,    // Merchant
-        // Id, UserId и Date бэкенд проставит сам
+        Amount: Number(payload.amount),
+        Category: payload.category,
+        Merchant: payload.merchant || 'Без названия'
       })
     });
-    if (!response.ok) throw new Error('Ошибка при сохранении транзакции');
+
+    if (!response.ok) {
+      const errorDetail = await response.text();
+      console.error("Ошибка бэкенда:", errorDetail);
+      throw new Error('Ошибка при сохранении транзакции');
+    }
     return response.json();
   }
 }
