@@ -46,27 +46,19 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { store } from '../store' // Импорт хранилища
+import { ref } from 'vue';
+import { store } from '../store';
 
-const showForm = ref(false)
+const title = ref('');
+const target = ref('');
 
-const newGoal = reactive({
-  title: '',
-  target: ''
-})
-
-const addNewGoal = () => {
-  if (!newGoal.title || !newGoal.target) {
-    return alert('Заполните все поля')
-  }
-
-  // Вызываем метод из store
-  store.addGoal({ ...newGoal })
-
-  // Очищаем форму и закрываем её
-  newGoal.title = ''
-  newGoal.target = ''
-  showForm.value = false
-}
+const saveGoal = async () => {
+  await store.addGoal({
+    title: title.value,
+    target: target.value
+  });
+  // Очищаем поля после добавления
+  title.value = '';
+  target.value = '';
+};
 </script>
