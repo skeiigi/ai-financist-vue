@@ -29,17 +29,27 @@
 
     <div v-for="goal in store.goals" :key="goal.id" class="card" style="padding: 20px; margin-bottom: 15px;">
       <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold;">
-        <span>{{ goal.title || goal.Title }}</span> <span>{{ (goal.current || goal.Current || 0).toLocaleString() }} / {{ (goal.target || goal.Target).toLocaleString() }} ₽</span>
+        <span>{{ goal?.title || goal?.Title || 'Без названия' }}</span>
+        <span>
+          {{ (goal?.currentAmount || goal?.CurrentAmount || 0).toLocaleString() }} / 
+          {{ (goal?.targetAmount || goal?.TargetAmount || 0).toLocaleString() }} ₽
+        </span>
       </div>
       
       <div style="height: 45px; background: #f3f4f6; border: 2px solid #e5e7eb; border-radius: 12px; overflow: hidden; position: relative;">
         <div :style="{ 
-          width: Math.min(((goal.CurrentAmount || 0) / (goal.TargetAmount || 1) * 100), 100) + '%', 
+          /* Защита от деления на ноль и undefined */
+          width: (goal?.targetAmount || goal?.TargetAmount) 
+            ? Math.min(((goal?.currentAmount || goal?.CurrentAmount || 0) / (goal?.targetAmount || goal?.TargetAmount) * 100), 100) + '%' 
+            : '0%', 
           background: '#2563eb', 
-          height: '100%' 
+          height: '100%',
+          transition: 'width 0.5s ease'
         }"></div>
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 500; color: #1f2937;">
-          {{ Math.round((goal.CurrentAmount || 0) / (goal.TargetAmount || 1) * 100) }}% накоплено
+          {{ (goal?.targetAmount || goal?.TargetAmount) 
+            ? Math.round((goal?.currentAmount || goal?.CurrentAmount || 0) / (goal?.targetAmount || goal?.TargetAmount) * 100) 
+            : 0 }}% накоплено
         </div>
       </div>
     </div>

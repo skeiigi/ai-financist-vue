@@ -7,7 +7,10 @@ export const store = reactive({
     { id: 1, amount: 500, merchant: 'Демо: Магнит', category: 'Продукты', date: '2026-04-12' },
     { id: 2, amount: 200, merchant: 'Демо: Такси', category: 'Транспорт', date: '2026-04-12' }
   ],
-  goals: [],
+  goals: [
+    { id: 1, title: 'Демо: Новый телефон', TargetAmount: 30000, CurrentAmount: 5000 },
+    { id: 2, title: 'Демо: Путешествие', TargetAmount: 100000, CurrentAmount: 20000 }
+  ],
   
   async fetchData() {
     if (!this.isLoggedIn) return;
