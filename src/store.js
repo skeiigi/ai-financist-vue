@@ -13,20 +13,24 @@ export const store = reactive({
   ],
   
   async fetchData() {
-    if (!this.isLoggedIn) return;
+    if (!window.localStorage.getItem('token')) return;
     
     try {
-      const [tx, gl] = await Promise.all([
+      const [tx, gl, user] = await Promise.all([
         api.getTransactions(),
-        api.getGoals()
+        api.getGoals(),
+        api.getUserInfo()
       ]);
       
       // ВАЖНО: полностью заменяем массивы данными из БД
       this.transactions = tx; 
       this.goals = gl;
+      this.user = user;
+      this.isLoggedIn = true;
       console.log('Данные успешно синхронизированы с БД');
     } catch (err) {
       console.error("Ошибка синхронизации:", err);
+      this.logout();
     }
   },
 
@@ -76,8 +80,16 @@ export const store = reactive({
   // Очистка при выходе
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('userName');
+
     this.isLoggedIn = false;
-    this.transactions = []; // Или вернуть демо-данные
-    this.goals = [];
+    this.transactions = [
+      { id: 1, amount: 500, merchant: 'Демо: Магнит', category: 'Продукты', date: '2026-04-12' },
+      { id: 2, amount: 200, merchant: 'Демо: Такси', category: 'Транспорт', date: '2026-04-11' }
+    ];
+    this.goals = [
+      { id: 1, title: 'Демо: Новый телефон', TargetAmount: 30000, CurrentAmount: 5000 },
+      { id: 2, title: 'Демо: Путешествие', TargetAmount: 100000, CurrentAmount: 20000 }
+    ];
   }
 })

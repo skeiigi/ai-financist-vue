@@ -37,6 +37,15 @@ export default {
     return data;
   },
 
+  async getUserInfo() {
+    const token = window.localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/manage/info`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error('Ошибка загрузки профиля');
+    return response.json();
+  },
+
   async getTransactions() {
     const token = localStorage.getItem('token');
     const response = await fetch(`${API_BASE}/api/finance/transactions`, {
