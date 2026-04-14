@@ -3,27 +3,28 @@
     <div class="card" style="margin-top: 50px;">
       <h1 style="text-align: center; margin-bottom: 20px;">Регистрация</h1>
       
-      <div class="form-group">
-        <label>Имя</label>
-        <input v-model="form.name" type="text" class="input-field" placeholder="Как вас зовут?">
+      <div v-if="error" style="color: red; padding: 10px; margin-bottom: 15px; border: 1px solid red; border-radius: 4px;">
+        {{ error }}
       </div>
 
       <div class="form-group">
         <label>Email</label>
-        <input v-model="form.email" type="email" class="input-field" placeholder="example@mail.com">
+        <input v-model="form.email" type="email" class="input-field" placeholder="example@mail.com" :disabled="loading">
       </div>
 
       <div class="form-group">
         <label>Пароль</label>
-        <input v-model="form.password" type="password" class="input-field" placeholder="••••••••">
+        <input v-model="form.password" type="password" class="input-field" placeholder="••••••••" :disabled="loading">
       </div>
 
       <div class="form-group">
         <label>Подтвердите пароль</label>
-        <input v-model="form.confirmPassword" type="password" class="input-field" placeholder="••••••••">
+        <input v-model="form.confirmPassword" type="password" class="input-field" placeholder="••••••••" :disabled="loading">
       </div>
 
-      <button class="btn-primary" @click="handleRegister">Создать аккаунт</button>
+      <button class="btn-primary" @click="handleRegister" :disabled="loading">
+        {{ loading ? 'Загрузка...' : 'Создать аккаунт' }}
+      </button>
 
       <p style="text-align: center; font-size: 14px; margin-top: 20px;">
         Уже есть аккаунт? <RouterLink to="/auth">Войти</RouterLink>
@@ -36,6 +37,7 @@
 import { ref } from 'vue'
 import { store } from '../store'
 import { useRouter } from 'vue-router'
+import api from '../services/api'
 
 const router = useRouter()
 const form = ref({
@@ -44,18 +46,38 @@ const form = ref({
   password: '',
   confirmPassword: ''
 })
+const loading = ref(false)
+const error = ref('')
 
-const handleRegister = () => {
-  if (form.value.password !== form.value.confirmPassword) {
-    alert('Пароли не совпадают!')
+const handleRegister = async () => {
+  if (!form.value.email || !form.value.password || !form.value.confirmPassword) {
+    error.value = 'Заполните все поля'
     return
   }
-  
-  // В MVP просто имитируем регистрацию
-  store.user.name = form.value.name
-  store.user.email = form.value.email
-  store.login()
-  
-  router.push('/')
+
+  if (form.value.password !== form.value.confirmPassword) {
+    error.value = 'Пароли не совпадают!'
+    return
+  }
+
+  loading.value = true
+  error.value = ''
+
+  try {
+    const response = await api.register(form.value.email, form.value.password)
+    
+    // После успешной регистрации - автоматический вход
+    await api.login(form.value.email, form.value.password)
+    
+    store.isLoggedIn = true
+    store.user = response.user
+    
+    router.push('/')
+  } catch (err) {
+    error.value = err.message || 'Ошибка при регистрации. Попробуйте еще раз'
+    console.error('Register error:', err)
+  } finally {
+    loading.value = false
+  }
 }
 </script>
