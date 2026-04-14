@@ -44,6 +44,15 @@ export default {
     });
     return response.json();
   },
+
+  async getGoals() {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/finance/goals`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (!response.ok) return []; // Если целей пока нет, возвращаем пустой массив
+    return response.json();
+  },
   
   async addTransaction(payload) {
     const token = localStorage.getItem('token');
