@@ -5,7 +5,7 @@
     <div class="card">
       <div class="form-group">
         <label>Номер телефона</label>
-        <input v-model="form.phone" type="text" class="input-field" placeholder="+7 (999) 000-00-00">
+        <input v-model="form.phoneNumber" type="text" class="input-field" placeholder="+7 (999) 000-00-00">
       </div>
       
       <div class="form-group">
