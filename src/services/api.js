@@ -1,13 +1,13 @@
 const API_BASE = import.meta.env.VITE_API_URL; // Замени на свою!
 
 export default {
-  async register(email, password, name) {
+  async register(email, password, phone) {
     const response = await fetch(`${API_BASE}/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password, phoneNumber: phone })
     });
 
     if (!response.ok) {
@@ -18,8 +18,7 @@ export default {
         : 'Ошибка регистрации. Возможно, пароль слишком простой.';
       throw new Error(message);
     }
-
-    localStorage.setItem('userName', firstName);
+    
     return this.login(email, password);
   },
   
