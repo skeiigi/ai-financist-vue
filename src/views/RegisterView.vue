@@ -14,7 +14,7 @@
 
       <div class="form-group">
         <label>Как вас зовут?</label>
-        <input v-model="firstName" type="text" class="input-field" placeholder="Введите имя">
+        <input v-model="phone" type="tel" class="input-field" placeholder="+7 (999) 000-00-00">
       </div>
 
       <div class="form-group">
