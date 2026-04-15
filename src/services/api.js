@@ -102,5 +102,26 @@ export default {
 
     if (!response.ok) throw new Error('Ошибка при создании цели');
     return response.json();
+  },
+
+  async updateProfile(email, phoneNumber) {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE}/api/account/update`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        Email: email,
+        PhoneNumber: phoneNumber
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Не удалось обновить профиль');
+    }
+    return response.json();
   }
 }
