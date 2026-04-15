@@ -33,33 +33,43 @@
 import { reactive, onMounted, watch } from 'vue'
 import { store } from '../store'
 import { useRouter } from 'vue-router'
-import api from '../services/api' // Не забудь импортировать api
+import api from '../services/api' 
 
 const router = useRouter()
 
 const form = reactive({
-  phoneNumber: '', // Согласуем название с шаблоном
+  phoneNumber: '',
   email: ''
 })
 
-// Функция для заполнения полей
+// Функция для заполнения полей из стора
 const fillForm = () => {
-  form.phoneNumber = store.user?.phoneNumber || ''
-  form.email = store.user?.email || ''
+  // Проверяем оба варианта написания (с большой и маленькой буквы)
+  form.email = store.user?.email || store.user?.Email || ''
+  form.phoneNumber = store.user?.phoneNumber || store.user?.PhoneNumber || ''
 }
 
-onMounted(fillForm)
-// Следим за изменениями в сторе (на случай, если данные подгрузились чуть позже)
-watch(() => store.user, fillForm)
+// Вызываем при загрузке
+onMounted(async () => {
+  if (!store.user) {
+    await store.fetchData() // На всякий случай обновляем данные
+  }
+  fillForm()
+})
+
+// Следим, когда данные загрузятся из сети
+watch(() => store.user, () => {
+  fillForm()
+}, { deep: true })
 
 const saveChanges = async () => {
   try {
+    // Теперь функция в api.js точно есть
     await api.updateProfile(form.email, form.phoneNumber)
     alert('Профиль успешно обновлен')
-    // Обновляем данные в приложении, чтобы изменения сразу везде отобразились
-    await store.fetchData()
+    await store.fetchData() // Перезагружаем данные в стор
   } catch (err) {
-    alert('Ошибка при обновлении: ' + err.message)
+    alert('Ошибка: ' + err.message)
   }
 }
 
