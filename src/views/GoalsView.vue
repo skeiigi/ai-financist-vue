@@ -3,6 +3,7 @@
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
       <h1 style="margin: 0;">Мои цели</h1>
       <button 
+        v-if="store.isLoggedIn"
         @click="showForm = !showForm" 
         class="btn-primary" 
         style="width: auto; padding: 10px 15px; border-radius: 10px;"
@@ -12,7 +13,7 @@
       </button>
     </div>
 
-    <div v-if="showForm" class="card" style="padding: 20px; margin-bottom: 20px; border: 1px solid #2563eb;">
+    <div v-if="showForm && store.isLoggedIn" class="card" style="padding: 20px; margin-bottom: 20px; border: 1px solid #2563eb;">
       <h3 style="margin-top: 0; margin-bottom: 15px;">Новая цель</h3>
       <div class="form-group">
         <label>Название</label>
@@ -25,6 +26,11 @@
       <button @click="addNewGoal" class="btn-primary" style="margin-top: 10px;" :disabled="loading">
         {{ loading ? 'Сохранение...' : 'Создать цель' }}
       </button>
+    </div>
+
+    <div v-if="!store.isLoggedIn" class="card" style="text-align: center; padding: 20px; margin-bottom: 20px; background: #f9fafb;">
+      <p style="color: #6b7280; margin-bottom: 15px;">Войдите в аккаунт, чтобы ставить цели и отслеживать прогресс</p>
+      <RouterLink to="/auth" class="btn-primary" style="display: inline-block; text-decoration: none;">Войти</RouterLink>
     </div>
 
     <div v-for="goal in store.goals" :key="goal.id" class="card" style="padding: 20px; margin-bottom: 15px;">
@@ -69,6 +75,11 @@ const newGoal = reactive({
 })
 
 const addNewGoal = async () => {
+  if (!store.isLoggedIn){
+    alert('Пожалуйста, войдите в аккаунт, чтобы создавать цели')
+    return
+  }
+
   if (!newGoal.title || !newGoal.target) {
     return alert('Заполните все поля')
   }

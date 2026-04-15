@@ -74,7 +74,6 @@ export const store = reactive({
   // Очистка при выходе
   logout() {
     localStorage.removeItem('token');
-    localStorage.removeItem('userName');
 
     this.isLoggedIn = false;
     this.transactions = [];
