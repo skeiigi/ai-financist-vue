@@ -50,7 +50,7 @@
 <script setup>
 import { store } from '../store'
 import { useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 
 const dailyLimit = 2000;
 
