@@ -12,11 +12,11 @@
 
     <div class="card" style="background: white; border-left: 5px solid #2563eb;">
       <h2 style="margin: 0; font-size: 14px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Доступно на сегодня</h2>
-      <p style="margin: 10px 0 0 0; font-size: 42px; font-weight: 900; color: #1f2937;">1 250 ₽</p>
+      <p style="margin: 10px 0 0 0; font-size: 42px; font-weight: 900; color: #1f2937;">{{ availableToday }} ₽</p>
       <div style="margin-top: 15px; height: 6px; background: #f3f4f6; border-radius: 3px; overflow: hidden;">
         <div style="width: 65%; height: 100%; background: #2563eb;"></div>
       </div>
-      <p style="margin: 8px 0 0 0; font-size: 12px; color: #9ca3af;">Использовано 650 ₽ из лимита 1 900 ₽</p>
+      <p style="margin: 8px 0 0 0; font-size: 12px; color: #9ca3af;">Потрачено сегодня: {{ todaySpent }} ₽ из {{ dailyLimit }} ₽</p>
     </div>
 
     <button @click="$router.push('/add-expense')" 
@@ -52,16 +52,26 @@ import { store } from '../store'
 import { useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 
+const dailyLimit = 2000;
+
+const todaySpent = computed(() => {
+  const today = new Date().toISOString().split('T')[0]; // ГГГГ-ММ-ДД
+  
+  return store.transactions
+    .filter(t => {
+      // Приводим дату транзакции к такому же формату ГГГГ-ММ-ДД
+      const tDate = new Date(t.date || t.createdAt).toISOString().split('T')[0];
+      return tDate === today;
+    })
+    .reduce((sum, t) => sum + t.amount, 0);
+});
+
+const availableToday = computed(() => {
+  const diff = dailyLimit - todaySpent.value;
+  return diff > 0 ? diff : 0;
+});
+
 const router = useRouter()
-
-const userName = ref('Друг')
-
-onMounted(() => {
-  const savedName = localStorage.getItem('userName')
-  if (savedName) {
-    userName.value = savedName
-  }
-})
 
 const handleSettingsClick = () => {
   if (store.isLoggedIn) {
