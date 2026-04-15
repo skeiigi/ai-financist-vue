@@ -33,6 +33,7 @@ export default {
     
     const data = await response.json();
     localStorage.setItem('token', data.accessToken);
+    localStorage.setItem('accessToken', data.accessToken);
     return data;
   },
 
