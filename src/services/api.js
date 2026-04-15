@@ -38,7 +38,7 @@ export default {
 
   async getUserInfo() {
     const token = window.localStorage.getItem('token');
-    const response = await fetch(`${API_BASE}/manage/info`, {
+    const response = await fetch(`${API_BASE}/api/account/info`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (!response.ok) throw new Error('Ошибка загрузки профиля');
