@@ -30,23 +30,38 @@
 </template>
 
 <script setup>
-import { reactive, onMounted } from 'vue' // Добавь reactive и onMounted
+import { reactive, onMounted, watch } from 'vue'
 import { store } from '../store'
 import { useRouter } from 'vue-router'
+import api from '../services/api' // Не забудь импортировать api
 
 const router = useRouter()
 
-// Локальная форма для редактирования
 const form = reactive({
-  phone: '',
+  phoneNumber: '', // Согласуем название с шаблоном
   email: ''
 })
 
-// Заполняем форму, когда данные пользователя загрузятся
-onMounted(() => {
-  form.phone = store.user?.phone || ''
+// Функция для заполнения полей
+const fillForm = () => {
+  form.phoneNumber = store.user?.phoneNumber || ''
   form.email = store.user?.email || ''
-})
+}
+
+onMounted(fillForm)
+// Следим за изменениями в сторе (на случай, если данные подгрузились чуть позже)
+watch(() => store.user, fillForm)
+
+const saveChanges = async () => {
+  try {
+    await api.updateProfile(form.email, form.phoneNumber)
+    alert('Профиль успешно обновлен')
+    // Обновляем данные в приложении, чтобы изменения сразу везде отобразились
+    await store.fetchData()
+  } catch (err) {
+    alert('Ошибка при обновлении: ' + err.message)
+  }
+}
 
 const logout = () => {
   // Полная очистка
@@ -58,12 +73,6 @@ const logout = () => {
   store.goals = []
   
   router.push('/login') // Перенаправляем именно на логин
-}
-
-const saveChanges = async () => {
-  // Тут будет вызов api.updateProfile(form)
-  alert('Изменения сохранены (временно только в консоли)')
-  console.log('Новые данные:', form)
 }
 
 const deleteAccount = () => {
