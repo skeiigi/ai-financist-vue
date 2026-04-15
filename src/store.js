@@ -3,14 +3,8 @@ import api from './services/api' // Импортируем твой api.js
 
 export const store = reactive({
   isLoggedIn: !!localStorage.getItem('token'), // Проверяем токен при загрузке страницы
-  transactions: [
-    { id: 1, amount: 500, merchant: 'Демо: Магнит', category: 'Продукты', date: '2026-04-12' },
-    { id: 2, amount: 200, merchant: 'Демо: Такси', category: 'Транспорт', date: '2026-04-12' }
-  ],
-  goals: [
-    { id: 1, title: 'Демо: Новый телефон', TargetAmount: 30000, CurrentAmount: 5000 },
-    { id: 2, title: 'Демо: Путешествие', TargetAmount: 100000, CurrentAmount: 20000 }
-  ],
+  transactions: [],
+  goals: [],
   
   async fetchData() {
     if (!window.localStorage.getItem('token')) return;
@@ -83,13 +77,7 @@ export const store = reactive({
     localStorage.removeItem('userName');
 
     this.isLoggedIn = false;
-    this.transactions = [
-      { id: 1, amount: 500, merchant: 'Демо: Магнит', category: 'Продукты', date: '2026-04-12' },
-      { id: 2, amount: 200, merchant: 'Демо: Такси', category: 'Транспорт', date: '2026-04-11' }
-    ];
-    this.goals = [
-      { id: 1, title: 'Демо: Новый телефон', TargetAmount: 30000, CurrentAmount: 5000 },
-      { id: 2, title: 'Демо: Путешествие', TargetAmount: 100000, CurrentAmount: 20000 }
-    ];
+    this.transactions = [];
+    this.goals = [];
   }
 })
